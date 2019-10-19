@@ -1,15 +1,36 @@
-const cool = require('cool-ascii-faces')
-const express = require('express');
-const app = express();
+const { ApolloServer, gql } = require('apollo-server');
+const forgivenessData = require('./forgivenessData');
 
+//The Graphql Schema
+const typeDefs = gql`
+  type Query {
+      forgivenesses: [Forgiveness]
+  }
+  type Forgiveness {
+      _id: ID!
+      title: String!
+      content: String
+  }
+  `;
 
-app.get('/transitu', function (request, response) {
-    response.send(cool())
+  //A map of functions which return data for the schema.
+  const resolvers = {
+      Query: {
+          forgivenesses: () => forgivenessData,
+          
+      },
+  };
+
+const server = new ApolloServer({
+    typeDefs,
+    resolvers,
 });
 
-app.listen(3000, function() {
-    console.log('listening at http://localhost:3000');
+
+server.listen().then(({url}) => {
+    console.log(`Server ready at ${url}`);
 });
+
 
 
 
